@@ -83,7 +83,13 @@ def shiftUpTab(*args):
     except:
         return
 
-
+def deleteTab(*args):
+    ind = myNotebook.index(myNotebook.select()) - 1
+    print(ind)
+    tabList.pop(ind)
+    lineList.pop(ind)
+    txtList.pop(ind)
+    myNotebook.forget(myNotebook.select())
 
 def configureGrid():
     window.rowconfigure(0, weight=1)
@@ -108,6 +114,7 @@ def configureGrid():
     keyBindings.rowconfigure(1, weight=1)
     keyBindings.rowconfigure(2, weight=1)
     keyBindings.rowconfigure(3, weight=1)
+    keyBindings.rowconfigure(4, weight=1)
     keyBindings.columnconfigure(0, weight=1)
 
 
@@ -118,16 +125,16 @@ def newTab(*args):
 
     #create popup window
     popup = tk.Tk()
+    popup.configure(bg="black")
     popup.title("Create Window")
-    popup.geometry('200x25+{}+{}'.format(screenPosx, screenPosy))
+    popup.geometry('175x25+{}+{}'.format(screenPosx, screenPosy))
     popup.resizable(width=False, height=False)
 
     #create entry and button - when button pressed create tab and close popup
-    fileName = tk.Entry(popup)
+    fileName = tk.Entry(popup, bg=keyBindings["foreground"])
     fileName.focus_set()
-    checkButton = tk.Button(popup, height=20, width=20, text="x", command= lambda: createTab(popup, fileName.get()))
-    fileName.pack(side="left")
-    checkButton.pack(side="right")
+    fileName.pack(fill="both", padx=5, pady=2)
+    fileName.bind("<Return>", lambda ev: createTab(popup, fileName.get()))
 
 def createTab(popup, fileName):
     global lineList
@@ -353,13 +360,17 @@ downTab = tk.Label(keyBindings, text="Control+DownArrow = Down Tab", highlightth
     bg="black",fg=myPurple)
 downTab.grid(row=1, column=0, sticky="nsew")
 binds.append(downTab)
+closeTab = tk.Label(keyBindings, text="Control+LeftArrow = Hide Tab", highlightthickness=0, borderwidth=0, 
+    bg="black",fg=myPurple)
+closeTab.grid(row=2, column=0, sticky="nsew")
+binds.append(closeTab)
 save = tk.Label(keyBindings, text="Control+s = Save File", highlightthickness=0, borderwidth=0, 
     bg="black", fg=myPurple)
-save.grid(row=2, column=0, sticky="nsew")
+save.grid(row=3, column=0, sticky="nsew")
 binds.append(save)
 makeFile = tk.Label(keyBindings, text="Control+m = Create file", highlightthickness=0, borderwidth=0, 
     bg="black", fg=myPurple)
-makeFile.grid(row=3, column=0, sticky="nsew")
+makeFile.grid(row=4, column=0, sticky="nsew")
 binds.append(makeFile)
 
 
@@ -428,5 +439,6 @@ for j in range(len(tabList)):
 window.bind("<Control-m>", newTab)
 window.bind("<Control-Up>", shiftDownTab)
 window.bind("<Control-Down>", shiftUpTab)
+window.bind('<Control-Left>', deleteTab)
     
 window.mainloop()
